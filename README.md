@@ -1,2 +1,2 @@
 # RiptideSteamTemplate
-A basic project to get you started with Riptide. Supports private lobbies and matchmaking.
+My take on a riptide steam template. Documentation will follow soon enough.
