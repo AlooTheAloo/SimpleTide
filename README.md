@@ -19,8 +19,8 @@ This project can easily be extended to add features like public lobbies (matchma
 # Installation & Prerequisites
 The prerequisites for using this project are :
 1. Having a computer that can do virtualisation
-1. Having two steam accounts
-2. Having a virtual machine of any operating system that can sync the build folder with the host machine
+2. Having two steam accounts
+3. Having a virtual machine of any operating system that can sync the build folder with the host machine
 
 Once these have been met, follow these steps to install the template
 1. Clone the repository `git clone https://github.com/AlooTheAloo/RiptideSteamTemplate`
@@ -38,15 +38,15 @@ Every object that should be able to be instantiated and tracked by the server sh
 Every **network object** contains a prefab ID, object ID and owner ID.
 
 Most of this template's features can be accessed through static methods from the `SimpleTide` class.   
-Notable ones include
-`isServer()` - returns true if the current game instance is acting as a server
-`isMine(NetworkObject no)` - returns true if 'no' is owned by the client
-`networkCreate(NetworkObject objectPrefab, int owner)` - As a client, tells every client to spawn an object prefab. If no owner is specified, the current client is used as an owner.
+Notable ones include <br>
+`isServer()` - returns true if the current game instance is acting as a server <br>
+`isMine(NetworkObject no)` - returns true if 'no' is owned by the client <br>
+`networkCreate(NetworkObject objectPrefab, int owner)` - As a client, tells every client to spawn an object prefab. If no owner is specified, the current client is used as an owner. <br>
 `networkCreate(ushort targetClient, NetworkObject netObj, int owner)`- As a server, tells a specific client to spawn an already instantiated Network Object or a prefab. If an owner is not specified, it will use the current client if it's a prefab or the current owner if it's already instantiated.
 
-There are also some useful static variables including
-`Server` - returns the server
-`Client` - returns the client
+There are also some useful static variables including <br>
+`Server` - returns the server <br>
+`Client` - returns the client <br>
 
 <hr>
 
