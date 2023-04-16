@@ -38,7 +38,7 @@ public class NetworkObjectsManager : MonoBehaviour
 
     public void OnDisconnected()
     {
-        foreach(NetworkObject obj in NetworkObject.NetworkObjects)
+        foreach(NetworkObject obj in NetworkObject.NetworkObjects.Values)
         {
             Destroy(obj.gameObject);
         }

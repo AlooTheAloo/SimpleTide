@@ -13,12 +13,14 @@ public class NetworkConstants : MonoBehaviour
 public enum MessageTypeToServer : ushort
 {
     CONNECTION_TO_SERVER, // Contains a string (name of client)
-    CREATE_OBJECT // Contains an int (the ID of the object to spawn)
+    CREATE_OBJECT, // Contains an int (the ID of the object to spawn)
+    DESTROY_OBJECT // Contains an int (the ID of the object to destroy)
 }
 
 public enum MessageTypeToClient : ushort
 {
     CONNECTION_TO_CLIENT , // Contains nothing, simple request for name of client
     CREATE_OBJECT, // Contains an int (the ID of the object to spawn)
-    NEW_USER // New user connects to room (contains int (conn_id) and string (uname))
+    NEW_USER, // New user connects to room (contains int (conn_id) and string (uname))
+    DESTROY_OBJECT // Contains an int (the ID of the object to destroy)
 }

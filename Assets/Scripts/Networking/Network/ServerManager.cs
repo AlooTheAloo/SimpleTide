@@ -49,7 +49,7 @@ public class ServerManager : MonoBehaviour
     private static void receivePong(ushort fromClientId, Message message)
     {
         // Tell new client about all the objects that exist
-        foreach (NetworkObject obj in NetworkObject.NetworkObjects)
+        foreach (NetworkObject obj in NetworkObject.NetworkObjects.Values)
         {
             SimpleTide.networkCreate(fromClientId, obj);
             Message objectCreateMessage = Message.Create(MessageSendMode.Reliable, MessageTypeToClient.CREATE_OBJECT);

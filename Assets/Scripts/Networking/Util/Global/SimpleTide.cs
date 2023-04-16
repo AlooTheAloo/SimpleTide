@@ -32,10 +32,10 @@ public class SimpleTide : MonoBehaviour
     /**
      * Asks a gameobject if it is owned by the client that called this method
      */
-    public static bool isMine(NetworkObject go)
+    public static bool isMine(NetworkObject no)
     {
-        if (go == null || NetworkManager.Singleton == null) { return false; }
-        else return go.objectID == client.Id;
+        if (no == null || NetworkManager.Singleton == null) { return false; }
+        else return no.ownerID == client.Id;
     }
 
     /**
@@ -85,11 +85,11 @@ public class SimpleTide : MonoBehaviour
     /**
      * Spawns a networkObject for one client, must be server
      */
-    public static void networkCreate(ushort targetClient, NetworkObject objectPrefab, int owner = -1)
+    public static void networkCreate(ushort targetClient, NetworkObject netObj, int owner = -1)
     {
         if(!isServer()) { Debug.LogError("You are trying to create an object for a client, but you arent't the server"); return;  }
 
-        bool isPrefab = objectPrefab.gameObject.scene.name == null;
+        bool isPrefab = netObj.gameObject.scene.name == null;
 
         if (owner == -1)
         {
@@ -97,11 +97,11 @@ public class SimpleTide : MonoBehaviour
             {
                 owner = client.Id;
             }    
-            else owner = objectPrefab.ownerID; // Already instantiated, so we can give it the pre-existing ID
+            else owner = netObj.ownerID; // Already instantiated, so we can give it the pre-existing ID
         }
 
 
-        if (!NetworkObjectsManager.singleton.isRegistered(objectPrefab))
+        if (!NetworkObjectsManager.singleton.isRegistered(netObj))
         {
             Debug.LogError("You are trying to instantiate a prefab that is not registered." +
                 " Add it to the list of objects in the 'Resources/NetworkPrefabs' folder to register it");
@@ -109,14 +109,14 @@ public class SimpleTide : MonoBehaviour
         }
 
         Message createNetworkObjectMessage = Message.Create(MessageSendMode.Reliable, MessageTypeToClient.CREATE_OBJECT);
-        createNetworkObjectMessage.AddInt(objectPrefab.prefabID);
+        createNetworkObjectMessage.AddInt(netObj.prefabID);
 
         if (isPrefab) // Is a prefab, we give it a new ID
         {
             createNetworkObjectMessage.AddInt(next_id);
             next_id++;
         }
-        else createNetworkObjectMessage.AddInt(objectPrefab.objectID); // Not a prefab, we use already existing ID
+        else createNetworkObjectMessage.AddInt(netObj.objectID); // Not a prefab, we use already existing ID
 
         createNetworkObjectMessage.AddUShort((ushort) owner);
         server.Send(createNetworkObjectMessage, targetClient);
@@ -158,8 +158,38 @@ public class SimpleTide : MonoBehaviour
     #region NetworkDestroy
     public static void networkDestroy(NetworkObject go)
     {
-
+        Message destroyObjectMessage = Message.Create(MessageSendMode.Reliable, MessageTypeToServer.DESTROY_OBJECT);
+        destroyObjectMessage.AddInt(go.objectID);
+        client.Send(destroyObjectMessage);
     }
+
+    [MessageHandler((ushort)MessageTypeToServer.DESTROY_OBJECT)]
+    private static void destroyObject_Server(ushort client, Message message)
+    {
+        int ID = message.GetInt();
+
+        NetworkObject netObj = NetworkObject.NetworkObjects[ID];
+
+        if (netObj.ownerID != client) {
+            Debug.Log("A client is trying to destroy an object that they aren't an owner of. " +
+                "Either there's a problem in your logic or they are cheating");
+            return; 
+        }
+
+        Message destroyNetworkObjectMessage = Message.Create(MessageSendMode.Reliable, MessageTypeToClient.DESTROY_OBJECT);
+        destroyNetworkObjectMessage.AddInt(ID);
+        server.SendToAll(destroyNetworkObjectMessage);
+    }
+
+
+    [MessageHandler((ushort) MessageTypeToClient.DESTROY_OBJECT)]
+    private static void destroyObject_Client(Message message)
+    {
+        int ID = message.GetInt();
+        Destroy(NetworkObject.NetworkObjects[ID].gameObject);
+    }
+
+
     #endregion
 
 }
