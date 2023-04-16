@@ -38,15 +38,15 @@ Every object that should be able to be instantiated and tracked by the server sh
 Every **network object** contains a prefab ID, object ID and owner ID.
 
 Most of this template's features can be accessed through static methods from the `SimpleTide` class.   
-Notable ones include <br>
-`isServer()` - returns true if the current game instance is acting as a server <br>
-`isMine(NetworkObject no)` - returns true if 'no' is owned by the client <br>
-`networkCreate(NetworkObject objectPrefab, int owner)` - As a client, tells every client to spawn an object prefab. If no owner is specified, the current client is used as an owner. <br>
-`networkCreate(ushort targetClient, NetworkObject netObj, int owner)`- As a server, tells a specific client to spawn an already instantiated Network Object or a prefab. If an owner is not specified, it will use the current client if it's a prefab or the current owner if it's already instantiated.
+Notable ones include 
+- `isServer()` Returns true if the current game instance is acting as a server
+- `isMine(NetworkObject no)` Returns true if 'no' is owned by the client 
+- `networkCreate(NetworkObject objectPrefab, int owner)`  As a client, tells every client to spawn an object prefab. If no owner is specified, the current client is used as an owner. 
+- `networkCreate(ushort targetClient, NetworkObject netObj, int owner)` As a server, tells a specific client to spawn an already instantiated Network Object or a prefab. If an owner is not specified, it will use the current client if it's a prefab or the current owner if it's already instantiated.
 
-There are also some useful static variables including <br>
-`Server` - returns the server <br>
-`Client` - returns the client <br>
+There are also some useful static variables including 
+- `Server` Returns the server
+- `Client` Returns the client
 
 <hr>
 
