@@ -36,6 +36,11 @@ public class NetworkObjectsManager : MonoBehaviour
         return networkObjectPrefabs.Where(x => x == obj).Count() == 1;
     }
 
+    public bool isRegistered(int prefab_ID)
+    {
+        return networkObjectPrefabs.Where(x => x.prefabID == prefab_ID).Count() == 1;
+    }
+
     public void OnDisconnected()
     {
         foreach(NetworkObject obj in NetworkObject.NetworkObjects.Values)
@@ -44,6 +49,9 @@ public class NetworkObjectsManager : MonoBehaviour
         }
 
         NetworkObject.NetworkObjects.Clear();
+        NetworkManager.Singleton.ObservedFields.Clear();
+        NetworkManager.Singleton.SyncedFields.Clear();
+
     }
 
 }

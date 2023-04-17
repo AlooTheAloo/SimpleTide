@@ -1,18 +1,16 @@
 using Riptide;
-using Steamworks;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class SimpleTide : MonoBehaviour
 {
     #region Helper variables
-    public static Client client {
+    public static Client client
+    {
         get
         {
-            return NetworkManager.Singleton.Client;
+            if (NetworkManager.Singleton == null) return null;
+            else return NetworkManager.Singleton.Client;
         }
         private set { }
     }
@@ -46,14 +44,19 @@ public class SimpleTide : MonoBehaviour
         return server.IsRunning;
     }
 
- 
+
     #endregion
 
     #region Network create
-    
-    private static int next_id = 1;
 
-    public static void ResetIDs() 
+    private static int next_id = int.MinValue;
+    
+    public static bool hasConnection()
+    {
+        return client != null && client.IsConnected;
+    }
+
+    public static void ResetIDs()
     {
         next_id = 0;
     }
@@ -63,7 +66,7 @@ public class SimpleTide : MonoBehaviour
      */
     public static void networkCreate(NetworkObject objectPrefab, int owner = -1)
     {
-        if(owner == -1)
+        if (owner == -1)
         {
             owner = client.Id;
         }
@@ -73,11 +76,11 @@ public class SimpleTide : MonoBehaviour
         {
             Debug.LogError("You are trying to instantiate a prefab that is not registered." +
                 " Add it to the list of objects in the 'Resources/NetworkPrefabs' folder to register it");
-            return; 
+            return;
         }
         Message message = Message.Create(MessageSendMode.Reliable, MessageTypeToServer.CREATE_OBJECT);
         message.AddInt(objectPrefab.prefabID);
-        message.AddUShort((ushort) owner);
+        message.AddUShort((ushort)owner);
         client.Send(message);
     }
 
@@ -87,21 +90,21 @@ public class SimpleTide : MonoBehaviour
      */
     public static void networkCreate(ushort targetClient, NetworkObject netObj, int owner = -1)
     {
-        if(!isServer()) { Debug.LogError("You are trying to create an object for a client, but you arent't the server"); return;  }
+        if (!isServer()) { Debug.LogError("You are trying to create an object for a client, but you arent't the server"); return; }
 
         bool isPrefab = netObj.gameObject.scene.name == null;
 
         if (owner == -1)
         {
-            if (isPrefab) 
+            if (isPrefab)
             {
                 owner = client.Id;
-            }    
+            }
             else owner = netObj.ownerID; // Already instantiated, so we can give it the pre-existing ID
         }
 
 
-        if (!NetworkObjectsManager.singleton.isRegistered(netObj))
+        if (!NetworkObjectsManager.singleton.isRegistered(netObj.prefabID))
         {
             Debug.LogError("You are trying to instantiate a prefab that is not registered." +
                 " Add it to the list of objects in the 'Resources/NetworkPrefabs' folder to register it");
@@ -118,13 +121,13 @@ public class SimpleTide : MonoBehaviour
         }
         else createNetworkObjectMessage.AddInt(netObj.objectID); // Not a prefab, we use already existing ID
 
-        createNetworkObjectMessage.AddUShort((ushort) owner);
+        createNetworkObjectMessage.AddUShort((ushort)owner);
         server.Send(createNetworkObjectMessage, targetClient);
     }
 
 
 
-    [MessageHandler((ushort) MessageTypeToServer.CREATE_OBJECT)]
+    [MessageHandler((ushort)MessageTypeToServer.CREATE_OBJECT)]
     private static void createObject_Server(ushort client, Message message)
     {
         Message createNetworkObjectMessage = Message.Create(MessageSendMode.Reliable, MessageTypeToClient.CREATE_OBJECT);
@@ -136,7 +139,7 @@ public class SimpleTide : MonoBehaviour
     }
 
 
-    [MessageHandler((ushort) MessageTypeToClient.CREATE_OBJECT)]
+    [MessageHandler((ushort)MessageTypeToClient.CREATE_OBJECT)]
     private static void createObject_Client(Message message)
     {
         int prefab_id = message.GetInt();
@@ -152,6 +155,8 @@ public class SimpleTide : MonoBehaviour
             ServerManager.players.Where(x => x.connection_ID == owner_id).ToArray()[0]
                 .setnetObj(obj);
         }
+
+        NetworkManager.Singleton.AddFields(obj);
     }
     #endregion
 
@@ -170,10 +175,11 @@ public class SimpleTide : MonoBehaviour
 
         NetworkObject netObj = NetworkObject.NetworkObjects[ID];
 
-        if (netObj.ownerID != client) {
+        if (netObj.ownerID != client)
+        {
             Debug.Log("A client is trying to destroy an object that they aren't an owner of. " +
-                "Either there's a problem in your logic or they are cheating");
-            return; 
+                "Either there's a problem in your logic or they are cheating.");
+            return;
         }
 
         Message destroyNetworkObjectMessage = Message.Create(MessageSendMode.Reliable, MessageTypeToClient.DESTROY_OBJECT);
@@ -182,14 +188,14 @@ public class SimpleTide : MonoBehaviour
     }
 
 
-    [MessageHandler((ushort) MessageTypeToClient.DESTROY_OBJECT)]
+
+    [MessageHandler((ushort)MessageTypeToClient.DESTROY_OBJECT)]
     private static void destroyObject_Client(Message message)
     {
         int ID = message.GetInt();
+        NetworkManager.Singleton.RemoveFields(NetworkObject.NetworkObjects[ID]);
         Destroy(NetworkObject.NetworkObjects[ID].gameObject);
     }
-
-
     #endregion
-
 }
+

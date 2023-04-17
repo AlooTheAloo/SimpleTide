@@ -1,4 +1,5 @@
 using Steamworks;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,4 +62,9 @@ public class LobbyUIManager : MonoBehaviour
         LobbyManager.openInvitationUI();
     }
 
+    public Action add_action_evt;
+    public void OnAddNum()
+    {
+        add_action_evt.Invoke();
+    }
 }

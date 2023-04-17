@@ -25,6 +25,11 @@ public class NetworkObject : MonoBehaviour
 
     private void Awake()
     {
-        
+        if (!SimpleTide.hasConnection())
+        {
+            Debug.LogError($"You are trying to create the networkobject {gameObject.name} while there is no connection. " +
+                $"Connect to a server before creating NetworkObjects.");
+            Destroy(gameObject);
+        }
     }
 }

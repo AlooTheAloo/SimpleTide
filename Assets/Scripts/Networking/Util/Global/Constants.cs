@@ -14,7 +14,8 @@ public enum MessageTypeToServer : ushort
 {
     CONNECTION_TO_SERVER, // Contains a string (name of client)
     CREATE_OBJECT, // Contains an int (the ID of the object to spawn)
-    DESTROY_OBJECT // Contains an int (the ID of the object to destroy)
+    DESTROY_OBJECT, // Contains an int (the ID of the object to destroy)
+    SYNCVAR_SIGNAL // Contains a type (ushort), an object and a hash (string) 
 }
 
 public enum MessageTypeToClient : ushort
@@ -22,5 +23,7 @@ public enum MessageTypeToClient : ushort
     CONNECTION_TO_CLIENT , // Contains nothing, simple request for name of client
     CREATE_OBJECT, // Contains an int (the ID of the object to spawn)
     NEW_USER, // New user connects to room (contains int (conn_id) and string (uname))
-    DESTROY_OBJECT // Contains an int (the ID of the object to destroy)
+    DESTROY_OBJECT, // Contains an int (the ID of the object to destroy
+    SYNCVAR_SIGNAL // Contains a type (ushort) an object and a hash (string) 
+
 }
