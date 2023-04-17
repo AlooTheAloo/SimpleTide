@@ -1,4 +1,4 @@
-#  Riptide Steam Template
+#  SimpleTide : a riptide Steam template
 A simple and lightweight kick-start to any unity riptide project that aims to use steam and a server-client player-hosted architecture. This template provides a set of features that are quite common in many multiplayer games. The steam wrapper is already implented to remove the need for players to do port forwarding.
 
 # Features
