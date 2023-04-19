@@ -1,10 +1,11 @@
-#  Riptide Steam Template
-A simple and lightweight kick-start to any unity riptide project that aims to use steam and a server-client player-hosted architecture. This template provides a set of features that are quite common in many multiplayer games. The steam wrapper is already implented to remove the need for players to do port forwarding.
+#  SimpleTide - a riptide Steam template
+A simple and lightweight kick-start to any unity riptide project that aims to use steam and a server-client player-hosted architecture. This template provides a set of features that are quite common in many multiplayer games, such as lobbies, matchmaking and replicated variables. The steam wrapper is already implented to remove the need for players to do port forwarding.
 
 # Features
 - Two types of matchmaking through steam out of the box
 - Network Creation and Destruction for joining and existing players
 - Object, prefab and user identification
+- Unidirectional and biderectional synchronised variables
 
 # Supported matchmaking types
 Out of the box, there are two available matchmaking types
