@@ -14,11 +14,23 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private Transform hostingGamePanel;
     [SerializeField] private TextMeshProUGUI lobby_name;
     [SerializeField] private TextMeshProUGUI lobby_name_host;
+    
 
     private void Awake()
     {
-        singleton = GetComponent<LobbyUIManager>();
+        singleton = this;
+        SimpleTide.onConnected += OnConnected;
+        SimpleTide.onHostingStart += OnHostingStart;
+        SimpleTide.onDisconnected += OnDisconnected;
     }
+
+    private void OnDestroy()
+    {
+        SimpleTide.onConnected -= OnConnected;
+        SimpleTide.onHostingStart -= OnHostingStart;
+        SimpleTide.onDisconnected -= OnDisconnected;
+    }
+
     public void OnMatchmake()
     {
         LobbyManager.Singleton.JoinRandomLobby();
@@ -62,9 +74,4 @@ public class LobbyUIManager : MonoBehaviour
         LobbyManager.openInvitationUI();
     }
 
-    public Action add_action_evt;
-    public void OnAddNum()
-    {
-        add_action_evt.Invoke();
-    }
 }

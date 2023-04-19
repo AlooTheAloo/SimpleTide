@@ -5,8 +5,6 @@ using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using UnityEngine;
 
 
@@ -201,9 +199,9 @@ public class NetworkManager : MonoBehaviour
         string lobbyName = SteamMatchmaking.GetLobbyData(LobbyManager.Singleton.lobbyId, "LOBBY_NAME");
         if (SimpleTide.isServer() && LobbyManager.Singleton.privateLobby)
         {
-            LobbyUIManager.singleton.OnHostingStart(lobbyName);
+            SimpleTide.onHostingStart?.Invoke(lobbyName);
         }
-        else LobbyUIManager.singleton.OnConnected(lobbyName);
+        else SimpleTide.onConnected?.Invoke(lobbyName);
     }
 
     // Called on client on new client connection
@@ -228,11 +226,19 @@ public class NetworkManager : MonoBehaviour
     }
 
 
-    // Called on client when player disconnects
+    // Called on client a when client a disconnects
     private void DidDisconnect(object sender, EventArgs e)
     {
-        LobbyUIManager.singleton.OnDisconnected();
+        // DC steam
+        SteamMatchmaking.LeaveLobby(LobbyManager.Singleton.lobbyId);
+        SimpleTide.onDisconnected?.Invoke();
         NetworkObjectsManager.singleton.OnDisconnected();
+
+        // Then DC the server
+        if (SimpleTide.isServer())
+        {
+           Singleton.StopServer();
+        }        
     }
 
     #endregion
@@ -241,12 +247,15 @@ public class NetworkManager : MonoBehaviour
 
     public void AddFields(NetworkObject no)
     {
-        print(no.gameObject.name);
-
         var monos = no.gameObject.GetComponentsInChildren<MonoBehaviour>();
 
         foreach (var mono in monos)
         {
+            if(mono == null)
+            {
+                Debug.LogError($"There is a missing script in the object {no.name}. Please remove it to ensure correct syncronising of variables.");
+                continue;
+            }
             var syncvars = FindSyncVars(mono);
             foreach (var field in syncvars)
             {
@@ -332,19 +341,12 @@ public class NetworkManager : MonoBehaviour
     [MessageHandler((ushort)MessageTypeToServer.SYNCVAR_SIGNAL)]
     private static void SyncVar_Server(ushort clientID, Message message)
     {
-        /*ushort a = message.GetUShort();
-        int b = message.GetInt();
-        string c = message.GetString();
-
-        print("a" + a);
-        print("b" + b);
-        print("c" + c);
-        */
-        print("Hello, got a message to sync a variable as a server!");
         Message client_broadcast = Message.Create(MessageSendMode.Reliable, MessageTypeToClient.SYNCVAR_SIGNAL);
 
         retrieveRes retrieved = AddObjectToMessage.retrieve(message);
-        // Any kind of server validation should go here
+
+        var field = Singleton.ObservedFields[retrieved.hash];
+        SimpleTide.onServerSyncVar(clientID, retrieved.value, field.fieldInfo, field.mono);
 
         Message hashedRetrieved = AddObjectToMessage.handle(client_broadcast, retrieved.value)
             .AddString(retrieved.hash);
@@ -365,6 +367,7 @@ public class SyncVar : Attribute
 
 public enum SyncVarType
 {
-    Server, // Default, secure. Only server can send data to server
+    Server, // Default, secure. Only server client can send data to server
+    //Authoritative, // Secure if handled correctly. Server client can modify, other clients can modify if they have permissions.
     Bidirectional, // Insecure, but very easy :) (if you dont care about security, ex. a coop game, use this)
 }

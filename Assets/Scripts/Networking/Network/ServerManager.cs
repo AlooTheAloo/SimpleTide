@@ -52,13 +52,6 @@ public class ServerManager : MonoBehaviour
         foreach (NetworkObject obj in NetworkObject.NetworkObjects.Values)
         {
             SimpleTide.networkCreate(fromClientId, obj);
-            //Message objectCreateMessage = Message.Create(MessageSendMode.Reliable, MessageTypeToClient.CREATE_OBJECT);
-            
-            //objectCreateMessage.AddInt(Singleton.playerPrefab.prefabID); // Prefab ID
-            //objectCreateMessage.AddInt(obj.objectID); // Object ID
-            //objectCreateMessage.AddInt(obj.ownerID); // Owner ID
-            
-            //SimpleTide.server.Send(objectCreateMessage, fromClientId);
         }
 
         players.Add(new Player(message.GetString(), fromClientId));

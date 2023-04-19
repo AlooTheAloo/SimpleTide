@@ -86,11 +86,11 @@ public class LobbyManager : MonoBehaviour
         SteamMatchmaking.SetLobbyData(lobbyId, HostAddressKey, SteamUser.GetSteamID().ToString()); //
         SteamMatchmaking.SetLobbyData(lobbyId, GAME_NAME_KEY, GAME_NAME_VALUE);
         SteamMatchmaking.SetLobbyData(lobbyId, GAME_VERSION_KEY, GAME_VERSION);
-        SteamMatchmaking.SetLobbyData(lobbyId, LOBBY_NAME_KEY, $"{SteamFriends.GetPersonaName()}'s {(privateLobby ? "private" : "")} lobby");
+        SteamMatchmaking.SetLobbyData(lobbyId, LOBBY_NAME_KEY, $"{SteamFriends.GetPersonaName()}'s{(privateLobby ? " private " : " ")}lobby");
         SteamMatchmaking.SetLobbyData(lobbyId, LOBBY_VISIBILITY_KEY, ((int) LOBBY_VISIBILITY_VALUES.VISIBLE).ToString());
 
         SimpleTide.server.Start(0, (ushort) NetworkConstants.MAX_PLAYERS);
-        SimpleTide.client.Connect("127.0.0.1");
+        SimpleTide.client.Connect("127.0.0.1"); // Connect to ourselves
 
     }
 
@@ -117,14 +117,13 @@ public class LobbyManager : MonoBehaviour
 
     internal void LeaveLobby()
     {
-        
+        // DC client
+        NetworkManager.Singleton.DisconnectClient();
+
         if (SimpleTide.isServer())
         {
-            NetworkManager.Singleton.StopServer();
             SteamMatchmaking.SetLobbyData(lobbyId, LOBBY_VISIBILITY_KEY, ((int)LOBBY_VISIBILITY_VALUES.DEAD).ToString());
         }
-        NetworkManager.Singleton.DisconnectClient();
-        SteamMatchmaking.LeaveLobby(lobbyId);
     }
         
     internal void JoinRandomLobby()

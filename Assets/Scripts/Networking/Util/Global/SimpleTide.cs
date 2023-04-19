@@ -1,10 +1,30 @@
 using Riptide;
+using System;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 public class SimpleTide : MonoBehaviour
 {
+    #region Events
+    public delegate void OnServerSyncVarDelegate(ushort sender, object var, FieldInfo field, MonoBehaviour target);
+    public static OnServerSyncVarDelegate onServerSyncVar;
+
+    public delegate void OnHostingStartDelegate(string lobbyName);
+    public static OnHostingStartDelegate onHostingStart;
+
+    public delegate void OnConnectedDelegate(string lobbyName);
+    public static OnConnectedDelegate onConnected;
+
+    public delegate void OnDisconnectedDelegate();
+    public static OnDisconnectedDelegate onDisconnected;
+    #endregion
+
     #region Helper variables
+
+
+
+
     public static Client client
     {
         get
@@ -28,12 +48,21 @@ public class SimpleTide : MonoBehaviour
 
     #region Helper methods
     /**
-     * Asks a gameobject if it is owned by the client that called this method
+     * Asks a networkObject if it is owned by the client that called this method
      */
     public static bool isMine(NetworkObject no)
     {
         if (no == null || NetworkManager.Singleton == null) { return false; }
         else return no.ownerID == client.Id;
+    }
+
+    /**
+     * Asks a networkObject if it is owned by a specific client
+     */
+    public static bool isTheirs(NetworkObject no, ushort client)
+    {
+        if (no == null || NetworkManager.Singleton == null) { return false; }
+        else return no.ownerID == client;
     }
 
     /**
@@ -90,7 +119,7 @@ public class SimpleTide : MonoBehaviour
      */
     public static void networkCreate(ushort targetClient, NetworkObject netObj, int owner = -1)
     {
-        if (!isServer()) { Debug.LogError("You are trying to create an object for a client, but you arent't the server"); return; }
+        if (!isServer()) { Debug.LogError("You are trying to create an object for a client, but you aren't the server"); return; }
 
         bool isPrefab = netObj.gameObject.scene.name == null;
 
@@ -160,7 +189,7 @@ public class SimpleTide : MonoBehaviour
     }
     #endregion
 
-    #region NetworkDestroy
+    #region Network destroy
     public static void networkDestroy(NetworkObject go)
     {
         Message destroyObjectMessage = Message.Create(MessageSendMode.Reliable, MessageTypeToServer.DESTROY_OBJECT);
