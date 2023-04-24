@@ -1,18 +1,16 @@
-﻿using Steamworks;
-using System;
+﻿using com.AlooTheAloo.SimpleTide;
+using Steamworks;
 using UnityEngine;
 
 public class LobbyManager : MonoBehaviour
 {
-    const string GAME_NAME_VALUE = "TODO"; // Replace with Game Name
     const string GAME_NAME_KEY = "GAME_NAME";
+    [SerializeField] string GAME_NAME_VALUE = "TODO"; // Replace with Game Name
 
-
-    [SerializeField] string GAME_VERSION = "0.0.0"; // Replace in editor with game version
     const string GAME_VERSION_KEY = "GAME_VERSION";
+    [SerializeField] string GAME_VERSION = "0.0.0"; // Replace in editor with game version
 
     const string LOBBY_NAME_KEY = "LOBBY_NAME";
-
     const string LOBBY_VISIBILITY_KEY = "LOBBY_VISIBILITY";
     public enum LOBBY_VISIBILITY_VALUES
     {

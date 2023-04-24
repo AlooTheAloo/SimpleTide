@@ -1,8 +1,4 @@
-using Steamworks;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using com.AlooTheAloo.SimpleTide;
 using TMPro;
 using UnityEngine;
 
@@ -22,6 +18,7 @@ public class LobbyUIManager : MonoBehaviour
         SimpleTide.onConnected += OnConnected;
         SimpleTide.onHostingStart += OnHostingStart;
         SimpleTide.onDisconnected += OnDisconnected;
+        SimpleTide.onFailToConnect += OnFail;
     }
 
     private void OnDestroy()
@@ -29,6 +26,7 @@ public class LobbyUIManager : MonoBehaviour
         SimpleTide.onConnected -= OnConnected;
         SimpleTide.onHostingStart -= OnHostingStart;
         SimpleTide.onDisconnected -= OnDisconnected;
+        SimpleTide.onFailToConnect -= OnFail;
     }
 
     public void OnMatchmake()
@@ -50,6 +48,11 @@ public class LobbyUIManager : MonoBehaviour
         afterConnectionPanel.gameObject.SetActive(false);
         hostingGamePanel.gameObject.SetActive(true);
         lobby_name_host.text = lobbyName;
+    }
+
+    public void OnFail()
+    {
+        print("Failed :(");
     }
 
     public void OnDisconnect()

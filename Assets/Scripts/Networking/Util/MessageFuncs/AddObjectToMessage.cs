@@ -1,7 +1,5 @@
 using Riptide;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AddObjectToMessage : MonoBehaviour
@@ -67,9 +65,6 @@ public class AddObjectToMessage : MonoBehaviour
         };
 
         supportedDelegates[m.GetUShort()].Invoke();
-        print("ret is " + ret); // prints 0
-        
-        
         return new retrieveRes(ret, m.GetString());
     }
 
