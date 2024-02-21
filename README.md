@@ -23,6 +23,10 @@ The prerequisites for using this project are :
 2. Having two steam accounts
 3. Having a virtual machine of any operating system that can sync the build folder with the host machine
 
+** or **
+
+Having two computers
+
 Once these have been met, follow these steps to install the template
 1. Clone the repository `git clone https://github.com/AlooTheAloo/RiptideSteamTemplate`
 2. Create a shared folder with your host machine on the 'build' folder
