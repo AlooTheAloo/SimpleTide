@@ -23,9 +23,10 @@ The prerequisites for using this project are :
 2. Having two steam accounts
 3. Having a virtual machine of any operating system that can sync the build folder with the host machine
 
-** or **
+**or**
 
-Having two computers
+1. Having two computers
+2. Have a way to remote in the other computer through the first (ex. [https://parsec.app/](Parsec), [https://moonlight-stream.org/](Moonlight), [https://fr.wikipedia.org/wiki/Remote_Desktop_Protocol#:~:text=Remote%20Desktop%20Protocol%20(RDP)%20est,serveur%20ex%C3%A9cutant%20Microsoft%20Terminal%20Services.](RDP)
 
 Once these have been met, follow these steps to install the template
 1. Clone the repository `git clone https://github.com/AlooTheAloo/RiptideSteamTemplate`
